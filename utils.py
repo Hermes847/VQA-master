@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-
+import random
 def get_angles(pos, i, d_model):
   angle_rates = 1 / np.power(10000, (2 * (i//2)) / np.float32(d_model))
   return pos * angle_rates
@@ -80,4 +80,14 @@ def bin_range_search(ranges,num):
 
 def group_by(arr,key,value):
     pass
+
+def swap(arr,i,j):
+    temp = arr[i]
+    arr[i] = arr[j]
+    arr[j] = temp
+
+def shuffle_segment(arr,start,len):
+    for i in range(start,start+len):
+        j = random.randint(i,start+len-1)
+        swap(arr,i,j)
 

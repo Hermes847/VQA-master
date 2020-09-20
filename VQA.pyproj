@@ -24,7 +24,13 @@
     <Compile Include="inceptionV3.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="preprocess.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="tokenizer.py" />
+    <Compile Include="trainer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="transformer.py" />
     <Compile Include="utils.py" />
     <Compile Include="vqa.py" />

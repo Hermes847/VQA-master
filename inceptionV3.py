@@ -56,15 +56,58 @@ import os
 #            as f:
 #                self.cache = pickle.load(f)
 #        return self.cache[index]
+#class FeatureExtractor:
+#    def __init__(self,cache_path,img_paths=None,bath_size = 128):
+#        self.cache_path = cache_path      
+#        if os.path.exists(cache_path):
+#            with open(cache_path,'rb') as f:
+#                self.cache = pickle.load(f)    
+#        else:          
+#            self.cache = {}
+#            self.image_model = tf.keras.applications.InceptionV3(weights='imagenet')
+#            for i in tqdm(range(0,len(img_paths),bath_size)):
+#                batch = []
+#                indices = []
+#                for j in range(bath_size):
+#                    if i+j>=len(img_paths):break
+#                    image_path = img_paths[i+j]
+#                    img = tf.io.read_file(image_path)
+#                    img = tf.image.decode_jpeg(img, channels=3)
+#                    img = tf.image.resize(img, (299, 299))
+#                    img = tf.expand_dims(img,0)                
+#                    batch.append(img)
+#                    indices.append(self.get_index_form_path(image_path))
+#                batch = tf.concat(batch,axis = 0)
+#                features = self.image_model(tf.keras.applications.inception_v3.preprocess_input(batch)).numpy()
+#                for k,index in enumerate(indices):
+#                    self.cache[index] = features[k]
+
+               
+#            with open(cache_path,'wb') as f:
+#                pickle.dump(self.cache,f)
+
+#    def get_index_form_path(self,img_path):
+#        return int(img_path.split('\\')[-1].split('_')[-1].split('.')[0])
+
+#    def __getitem__(self,index):
+#        return self.cache[index]   
+
+
+
 class FeatureExtractor:
     def __init__(self,cache_path,img_paths=None,bath_size = 128):
         self.cache_path = cache_path      
-        if os.path.exists(cache_path):
-            with open(cache_path,'rb') as f:
-                self.cache = pickle.load(f)    
+        self.cache = {}
+        if os.path.isdir(cache_path):
+            pass
         else:          
-            self.cache = {}
-            self.image_model = tf.keras.applications.InceptionV3(weights='imagenet')
+            os.mkdir(cache_path)
+            image_model = tf.keras.applications.InceptionV3(include_top=False,
+                                                weights='imagenet')
+            new_input = image_model.input
+            hidden_layer = image_model.layers[-1].output
+
+            image_features_extract_model = tf.keras.Model(new_input, hidden_layer)
             for i in tqdm(range(0,len(img_paths),bath_size)):
                 batch = []
                 indices = []
@@ -78,13 +121,17 @@ class FeatureExtractor:
                     batch.append(img)
                     indices.append(self.get_index_form_path(image_path))
                 batch = tf.concat(batch,axis = 0)
-                features = self.image_model(tf.keras.applications.inception_v3.preprocess_input(batch)).numpy()
+                #[batch_size,8,8,2048]
+                features = image_features_extract_model(tf.keras.applications.inception_v3.preprocess_input(batch)).numpy()
                 for k,index in enumerate(indices):
-                    self.cache[index] = features[k]
+                    with open(os.path.join(cache_path,"{0}.bin".format(index)),'wb') as f:
+                        pickle.dump(features[k],f)
 
-               
-            with open(cache_path,'wb') as f:
-                pickle.dump(self.cache,f)
+    def recache(self,ids):
+        self.cache = {}
+        for index in ids:
+            with open(os.path.join(cache_path,"{0}.bin".format(index)),'rb') as f:
+                self.cache[index] = pickle.load(f)
 
     def get_index_form_path(self,img_path):
         return int(img_path.split('\\')[-1].split('_')[-1].split('.')[0])
@@ -93,12 +140,11 @@ class FeatureExtractor:
         return self.cache[index]   
 
 
-
 if __name__ == "__main__":
     paths = []
     folders = [r'D:\documents\coding\Data\coco\train2014',r'D:\documents\coding\Data\coco\val2014']
     for folder in folders:
         paths += [os.path.join(folder,x) for x in list(os.walk(folder))[0][2]]
-    FeatureExtractor('features.bin',paths)
+    FeatureExtractor(r'D:\documents\coding\Data\coco\features',paths)
 
 

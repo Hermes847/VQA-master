@@ -5,9 +5,11 @@ from encoder import Encoder
 from tokenizer import MyTokenizer
 
 class Transformer(tf.keras.Model):
-    def __init__(self):
-        self.tokenizer = MyTokenizer()
-        self.encoder = Encoder()
+    def __init__(self,encoder,decoder):
+        self.encoder = encoder
+        self.decoder = decoder
+
+
     def call(self,inputs):
         pass
 
