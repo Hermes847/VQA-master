@@ -13,4 +13,8 @@ class Transformer(tf.keras.Model):
     def call(self,inputs):
         pass
 
+    def save(self):
+        pass
+
+
     

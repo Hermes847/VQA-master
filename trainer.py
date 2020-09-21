@@ -24,19 +24,21 @@ class Trainer:
 
 	def train_step(self,batch):
 		batch_qst_tokens,batch_tr_img_ids,batch_te_img_ids,batch_tr_ans_tokens,batch_te_ans_tokens = self.preprocesser(batch)
-		prediction = self.transformer(batch_qst_tokens,
+		prediction = self.model(batch_qst_tokens,
 								batch_tr_img_ids,
 								batch_te_img_ids,
 								batch_tr_ans_tokens,
 								batch_te_ans_tokens)
 
 
-	def train(self,epoch,step):
-		for e in epoch:
-			for s in step:
-				self.train_step(self.train_iter.next())
-			self.train_iter.next_chunk()
-
+	def train(self,step,step_per_save,step_per_chunk):
+		for s in range(step):
+			if s%step_per_save == 0:
+				self.model.save()
+			if s%step == step_per_chunk:
+				self.train_iter.next_chunk()
+			self.train_step(self.train_iter.next())
+				
 
 	def test(self):
 		pass
