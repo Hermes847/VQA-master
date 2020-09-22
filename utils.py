@@ -79,7 +79,15 @@ def bin_range_search(ranges,num):
     pass
 
 def group_by(arr,key,value):
-    pass
+    groups = {}
+    for x in arr:
+        k = key(x)
+        v = value(x)
+        if k in groups:
+            groups[k].append(v)
+        else:
+            groups[k] = [v]
+    return groups
 
 def swap(arr,i,j):
     temp = arr[i]
