@@ -24,6 +24,9 @@
     <Compile Include="inceptionV3.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="loss.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="preprocess.py">
       <SubType>Code</SubType>
     </Compile>
