@@ -7,14 +7,14 @@ class VQAIter:
 		self.ds = ds
 		self.batch_size = batch_size
 		self.ids = ids
-		self.groups = [x[1] for x in utl.group_by(self.ids,key = lambda x:self.ds.qa[x]['question'],value = lambda x:x).items()]
+		self.groups = [x[1] for x in utl.group_by(self.ids,key = lambda x:self.ds.qa[x]['question'],value = lambda x:x).items() if len(x[1])>1]
 		self.cur_chunk = 0
 		self.num_chunks=num_chunks
-		self.chunk_size = len(groups)//num_chunks
+		self.chunk_size = len(self.groups)//num_chunks
 		self.index = 0
 
 	def get_cur_chunk(self):
-		return groups[self.cur_chunk*self.chunk_size:self.cur_chunk*(self.chunk_size+1)]
+		return self.groups[self.cur_chunk*self.chunk_size:self.cur_chunk*(self.chunk_size+1)]
 
 	def next_chunk(self):		
 		self.cur_chunk = (self.cur_chunk+1)%self.num_chunks

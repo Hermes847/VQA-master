@@ -9,7 +9,7 @@ class Transformer(tf.keras.Model):
         self.encoder = Encoder(r'D:\documents\coding\Data\coco\features',[r'D:\documents\coding\Data\coco\train2014',r'D:\documents\coding\Data\coco\val2014'])
         self.decoder = Decoder(num_layers, d_model, num_heads, dff,
                maximum_position_encoding, rate)
-
+        
 
 
     def call(self,inputs):
